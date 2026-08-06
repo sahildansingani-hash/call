@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Night Nest 🌙 — our little call</title>
+<meta name="theme-color" content="#0b0e1d">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌙</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Caveat:wght@500;700&family=Nunito:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0b0e1d;
+    --ink-2:#141930;
+    --plum:#1d1640;
+    --rose:#ff9eb5;
+    --rose-deep:#f4738f;
+    --gold:#ffd9a0;
+    --lavender:#b8b3e9;
+    --milk:#f6f1ff;
+    --milk-dim:#a9a3d0;
+    --card:rgba(29,22,64,.55);
+    --line:rgba(184,179,233,.22);
+    --shadow-rose:0 8px 40px rgba(244,115,143,.35);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    font-family:'Nunito',sans-serif;
+    background:var(--ink);
+    color:var(--milk);
+    overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- night sky ---------- */
+  .sky{
+    position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(1200px 800px at 78% -10%, rgba(184,179,233,.14), transparent 60%),
+      radial-gradient(900px 700px at 12% 110%, rgba(244,115,143,.12), transparent 55%),
+      radial-gradient(700px 500px at 50% 45%, rgba(29,22,64,.9), transparent 100%),
+      linear-gradient(180deg,#0b0e1d 0%, #131235 55%, #1b1030 100%);
+  }
+  .sky::after{ /* grain */
+    content:"";position:absolute;inset:0;opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .star{position:absolute;border-radius:50%;background:var(--milk);animation:twinkle 4s ease-in-out infinite}
+  @keyframes twinkle{0%,100%{opacity:.15;transform:scale(.8)}50%{opacity:.9;transform:scale(1.15)}}
+  .shooting{
+    position:absolute;width:110px;height:1.5px;border-radius:2px;
+    background:linear-gradient(90deg,var(--milk),transparent);
+    transform:rotate(-28deg);opacity:0;animation:shoot 9s linear infinite;
+  }
+  @keyframes shoot{
+    0%,91%{opacity:0;translate:0 0}
+    92%{opacity:.9}
+    100%{opacity:0;translate:-260px 140px}
+  }
+
+  /* ---------- moon ---------- */
+  .moon{
+    width:118px;height:118px;border-radius:50%;position:relative;
+    background:radial-gradient(circle at 35% 32%, #fff7e8, var(--gold) 58%, #e8b978 100%);
+    box-shadow:0 0 60px rgba(255,217,160,.5),0 0 140px rgba(255,217,160,.22), inset -14px -10px 30px rgba(190,120,90,.35);
+    animation:floaty 7s ease-in-out infinite;
+  }
+  .moon i{position:absolute;border-radius:50%;background:rgba(200,140,100,.28);box-shadow:inset 2px 2px 5px rgba(120,70,50,.3)}
+  .moon i:nth-child(1){width:22px;height:22px;top:24%;left:56%}
+  .moon i:nth-child(2){width:13px;height:13px;top:56%;left:30%}
+  .moon i:nth-child(3){width:9px;height:9px;top:66%;left:62%}
+  .moon .cheek{width:14px;height:8px;border-radius:50%;background:rgba(244,115,143,.5);box-shadow:none;filter:blur(2px)}
+  .moon .cheek.l{top:52%;left:16%}
+  .moon .cheek.r{top:52%;left:76%}
+  .moon .eye{width:10px;height:10px;background:transparent;box-shadow:none;border:0;border-bottom:2.5px solid #7a4a3a;border-radius:0 0 10px 10px;top:44%}
+  .moon .eye.l{left:30%}
+  .moon .eye.r{left:60%}
+  .moon .smile{width:16px;height:9px;background:transparent;box-shadow:none;border:0;border-bottom:3px solid #7a4a3a;border-radius:0 0 16px 16px;top:56%;left:43%}
+  @keyframes floaty{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-12px) rotate(3deg)}}
+
+  /* ---------- landing ---------- */
+  .screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:2;padding:24px;overflow-y:auto}
+  .hidden{display:none!important}
+  .nest-card{
+    width:min(430px,100%);text-align:center;
+    display:flex;flex-direction:column;align-items:center;gap:0;
+    animation:rise .9s cubic-bezier(.2,.8,.2,1) both;
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+
+  .kicker{
+    font-family:'Caveat',cursive;font-size:1.35rem;color:var(--rose);
+    margin-top:20px;letter-spacing:.02em;transform:rotate(-2deg);
+  }
+  h1{
+    font-family:'Fraunces',serif;font-weight:420;font-style:italic;
+    font-size:clamp(2.5rem,9vw,3.4rem);line-height:1.04;letter-spacing:-.02em;
+    margin:6px 0 10px;
+    background:linear-gradient(115deg,var(--milk) 30%,var(--gold) 60%,var(--rose) 90%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .sub{color:var(--milk-dim);font-size:.95rem;max-width:34ch;margin:0 auto 26px;line-height:1.55}
+
+  .names{
+    display:flex;align-items:center;gap:10px;width:100%;margin-bottom:22px;
+  }
+  .field{
+    flex:1;position:relative;
+  }
+  .field input{
+    width:100%;padding:14px 14px 13px;border-radius:16px;border:1.5px solid var(--line);
+    background:var(--card);backdrop-filter:blur(8px);
+    color:var(--milk);font-family:'Nunito',sans-serif;font-weight:700;font-size:1rem;text-align:center;
+    outline:none;transition:border-color .2s, box-shadow .2s;
+  }
+  .field input::placeholder{color:var(--milk-dim);font-weight:600}
+  .field input:focus{border-color:var(--rose);box-shadow:0 0 0 4px rgba(244,115,143,.15)}
+  .field label{
+    position:absolute;top:-11px;left:14px;z-index:2;font-size:.66rem;line-height:1.5;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--lavender);background:var(--ink-2);padding:2px 9px;border-radius:9px;border:1px solid var(--line);
+  }
+  .amp{font-size:1.5rem;animation:beat 1.6s ease-in-out infinite}
+  @keyframes beat{0%,100%{transform:scale(1)}12%{transform:scale(1.25)}24%{transform:scale(1)}36%{transform:scale(1.18)}48%{transform:scale(1)}}
+
+  .secret-row{width:100%;margin-bottom:22px}
+  .secret-row .hint{font-family:'Caveat',cursive;color:var(--milk-dim);font-size:1.05rem;margin-top:7px}
+
+  .join-btn{
+    width:100%;padding:17px 20px;border:none;border-radius:20px;cursor:pointer;
+    font-family:'Fraunces',serif;font-style:italic;font-weight:500;font-size:1.25rem;letter-spacing:.01em;
+    color:#3a1020;
+    background:linear-gradient(120deg,var(--gold),var(--rose) 65%,var(--rose-deep));
+    box-shadow:var(--shadow-rose);
+    transition:transform .18s cubic-bezier(.2,.8,.2,1), box-shadow .18s;
+  }
+  .join-btn:hover{transform:translateY(-2px) scale(1.015);box-shadow:0 14px 50px rgba(244,115,143,.5)}
+  .join-btn:active{transform:translateY(0) scale(.99)}
+  .tiny-note{margin-top:16px;font-size:.78rem;color:var(--milk-dim);line-height:1.6;max-width:36ch}
+  .tiny-note b{color:var(--lavender)}
+
+  /* ---------- call screen ---------- */
+  #call{background:var(--ink)}
+  #jitsi-box{position:absolute;inset:0}
+  #jitsi-box iframe{width:100%;height:100%;border:0}
+
+  .chip{
+    position:absolute;top:calc(12px + env(safe-area-inset-top));left:12px;z-index:12;
+    display:flex;align-items:center;gap:8px;
+    background:rgba(11,14,29,.72);border:1px solid var(--line);backdrop-filter:blur(10px);
+    padding:8px 14px;border-radius:999px;font-size:.85rem;font-weight:700;
+  }
+  .chip .dot{width:8px;height:8px;border-radius:50%;background:var(--rose);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(244,115,143,.5)}60%{box-shadow:0 0 0 7px rgba(244,115,143,0)}}
+  .chip .timer{color:var(--milk-dim);font-weight:600;font-variant-numeric:tabular-nums}
+
+  .wake-chip{
+    position:absolute;top:calc(12px + env(safe-area-inset-top));right:12px;z-index:12;
+    background:rgba(11,14,29,.72);border:1px solid var(--line);backdrop-filter:blur(10px);
+    padding:8px 13px;border-radius:999px;font-size:.78rem;font-weight:700;color:var(--milk-dim);
+    display:flex;align-items:center;gap:6px;cursor:pointer;
+  }
+  .wake-chip.on{color:var(--gold);border-color:rgba(255,217,160,.4)}
+
+  .moonbar{
+    position:absolute;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:12;
+    display:flex;gap:10px;padding:10px 12px;border-radius:24px;
+    background:rgba(11,14,29,.72);border:1px solid var(--line);backdrop-filter:blur(12px);
+    box-shadow:0 10px 40px rgba(0,0,0,.45);
+  }
+  .moonbar button{
+    width:52px;height:52px;border-radius:17px;border:1px solid transparent;cursor:pointer;
+    background:rgba(184,179,233,.1);font-size:1.35rem;line-height:1;
+    display:flex;align-items:center;justify-content:center;
+    transition:transform .15s, background .15s;
+  }
+  .moonbar button:hover{transform:translateY(-3px);background:rgba(244,115,143,.18)}
+  .moonbar button:active{transform:scale(.92)}
+  .moonbar button span{display:block}
+
+  /* whispers popover */
+  .whispers{
+    position:absolute;left:50%;bottom:calc(158px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(8px);
+    z-index:13;display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:20px;
+    background:rgba(20,25,48,.92);border:1px solid var(--line);backdrop-filter:blur(14px);
+    opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;
+  }
+  .whispers.open{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+  .whispers button{
+    border:none;cursor:pointer;padding:11px 20px;border-radius:14px;
+    background:rgba(184,179,233,.1);color:var(--milk);
+    font-family:'Caveat',cursive;font-size:1.3rem;font-weight:600;white-space:nowrap;
+    transition:background .15s, transform .15s;
+  }
+  .whispers button:hover{background:rgba(244,115,143,.22);transform:scale(1.03)}
+
+  /* incoming whisper */
+  #whisper-stage{
+    position:fixed;inset:0;z-index:40;pointer-events:none;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .whisper-msg{
+    font-family:'Caveat',cursive;font-size:clamp(2.6rem,9vw,4.5rem);font-weight:700;
+    color:var(--milk);text-align:center;padding:0 20px;
+    text-shadow:0 0 30px rgba(244,115,143,.8),0 4px 30px rgba(0,0,0,.6);
+    animation:whisperIn 4s cubic-bezier(.2,.8,.2,1) both;
+  }
+  @keyframes whisperIn{
+    0%{opacity:0;transform:scale(.7) rotate(-3deg)}
+    12%{opacity:1;transform:scale(1.04) rotate(1deg)}
+    18%{transform:scale(1) rotate(0)}
+    80%{opacity:1}
+    100%{opacity:0;transform:translateY(-30px)}
+  }
+
+  /* floating hearts */
+  .fheart{
+    position:fixed;bottom:-40px;z-index:39;pointer-events:none;
+    animation:heartUp linear both;
+  }
+  @keyframes heartUp{
+    0%{opacity:0;transform:translateY(0) scale(.6) rotate(-8deg)}
+    8%{opacity:1}
+    100%{opacity:0;transform:translateY(-105vh) scale(1.25) rotate(10deg)}
+  }
+
+  /* ---------- sleep overlay ---------- */
+  #sleep{
+    position:fixed;inset:0;z-index:60;background:#000;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+    opacity:0;pointer-events:none;transition:opacity .8s ease;
+    cursor:pointer;
+  }
+  #sleep.on{opacity:.965;pointer-events:auto}
+  #sleep .mini-moon{
+    width:44px;height:44px;border-radius:50%;
+    background:radial-gradient(circle at 35% 32%, #4a4230, #2c261a 60%);
+    box-shadow:0 0 30px rgba(255,217,160,.12);
+    animation:breathe 5s ease-in-out infinite;
+  }
+  @keyframes breathe{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.12);opacity:1}}
+  #sleep .clock{
+    font-family:'Fraunces',serif;font-weight:300;font-size:3.2rem;color:rgba(246,241,255,.32);
+    font-variant-numeric:tabular-nums;letter-spacing:.02em;
+  }
+  #sleep .together{font-family:'Caveat',cursive;font-size:1.25rem;color:rgba(244,115,143,.45)}
+  #sleep .hint{font-size:.72rem;color:rgba(246,241,255,.18);letter-spacing:.14em;text-transform:uppercase;margin-top:24px}
+
+  /* toast */
+  #toast{
+    position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(80px);
+    z-index:70;background:rgba(20,25,48,.95);border:1px solid var(--line);color:var(--milk);
+    padding:11px 20px;border-radius:14px;font-size:.85rem;font-weight:700;backdrop-filter:blur(10px);
+    transition:transform .3s cubic-bezier(.2,.8,.2,1);max-width:88vw;text-align:center;
+  }
+  #toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<div class="sky" id="sky">
+  <div class="shooting" style="top:14%;left:70%"></div>
+  <div class="shooting" style="top:34%;left:30%;animation-delay:4.5s"></div>
+</div>
+
+<!-- ======== LANDING ======== -->
+<div class="screen" id="landing">
+  <div class="nest-card">
+    <div class="moon" aria-hidden="true">
+      <i></i><i></i><i></i>
+      <i class="eye l"></i><i class="eye r"></i>
+      <i class="cheek l"></i><i class="cheek r"></i>
+      <i class="smile"></i>
+    </div>
+    <div class="kicker">for the nights we can't be in the same bed…</div>
+    <h1>Night&nbsp;Nest</h1>
+    <p class="sub">our own little room that stays open all night — hop in, say goodnight, and fall asleep together 💗</p>
+
+    <div class="names">
+      <div class="field">
+        <label>you</label>
+        <input id="name-me" placeholder="your name" maxlength="20" autocomplete="off">
+      </div>
+      <div class="amp">💞</div>
+      <div class="field">
+        <label>your love</label>
+        <input id="name-them" placeholder="their name" maxlength="20" autocomplete="off">
+      </div>
+    </div>
+
+    <div class="secret-row">
+      <div class="field">
+        <label>our secret word 🤫</label>
+        <input id="secret" placeholder="something only you two know" maxlength="30" autocomplete="off">
+      </div>
+      <div class="hint">type the same secret word on both phones — it becomes your private room key</div>
+    </div>
+
+    <button class="join-btn" id="join">tuck me in&nbsp;&nbsp;🌙</button>
+
+    <p class="tiny-note">tip: <b>plug your phone in</b> &amp; allow camera/mic when asked. the screen is kept awake automatically, and <b>sleep mode</b> dims it to black while the call keeps running.</p>
+  </div>
+</div>
+
+<!-- ======== CALL ======== -->
+<div class="screen hidden" id="call">
+  <div id="jitsi-box"></div>
+
+  <div class="chip">
+    <span class="dot"></span>
+    <span id="chip-names">us</span>
+    <span class="timer" id="chip-timer">0:00</span>
+  </div>
+
+  <button class="wake-chip" id="wake-chip" title="keep screen awake">
+    <span id="wake-ico">🔅</span><span id="wake-txt">screen: normal</span>
+  </button>
+
+  <div class="whispers" id="whispers">
+    <button data-w="goodnight, my love 🌙">goodnight, my love 🌙</button>
+    <button data-w="i love you so much 💗">i love you so much 💗</button>
+    <button data-w="sweet dreams, i'm right here ✨">sweet dreams, i'm right here ✨</button>
+    <button data-w="thinking of you 🥰">thinking of you 🥰</button>
+  </div>
+
+  <div class="moonbar">
+    <button id="btn-heart" title="send hearts"><span>💗</span></button>
+    <button id="btn-whisper" title="whisper something sweet"><span>💌</span></button>
+    <button id="btn-sleep" title="sleep mode — dim to black"><span>😴</span></button>
+  </div>
+</div>
+
+<!-- sleep overlay -->
+<div id="sleep">
+  <div class="mini-moon"></div>
+  <div class="clock" id="sleep-clock">–:––</div>
+  <div class="together" id="sleep-together">together for 0 min 💗</div>
+  <div class="hint">double-tap to wake · call is still on</div>
+</div>
+
+<div id="whisper-stage"></div>
+<div id="toast"></div>
+
+<script src="https://meet.jit.si/external_api.js"></script>
+<script>
+(function(){
+  const $ = s => document.querySelector(s);
+
+  /* ---- starfield ---- */
+  const sky = $('#sky');
+  for(let i=0;i<90;i++){
+    const s = document.createElement('div');
+    s.className='star';
+    const sz = Math.random()*2.2+0.6;
+    s.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*4}s;animation-duration:${3+Math.random()*4}s`;
+    sky.appendChild(s);
+  }
+
+  /* ---- state ---- */
+  const store = {
+    get: k => localStorage.getItem('nn_'+k) || '',
+    set: (k,v) => localStorage.setItem('nn_'+k, v)
+  };
+  $('#name-me').value   = store.get('me');
+  $('#name-them').value = store.get('them');
+  $('#secret').value    = store.get('secret');
+
+  let api=null, wakeLock=null, startedAt=null, timerInt=null, clockInt=null;
+
+  const slug = t => t.toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+
+  function toast(msg, ms=3200){
+    const t=$('#toast'); t.textContent=msg; t.classList.add('show');
+    clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'), ms);
+  }
+
+  /* ---- hearts ---- */
+  function burstHearts(n=10){
+    const emo=['💗','💞','💖','🩷','💘'];
+    for(let i=0;i<n;i++){
+      const h=document.createElement('div');
+      h.className='fheart';
+      h.textContent=emo[Math.floor(Math.random()*emo.length)];
+      h.style.left=(8+Math.random()*84)+'vw';
+      h.style.fontSize=(1.2+Math.random()*1.8)+'rem';
+      h.style.animationDuration=(3.5+Math.random()*3)+'s';
+      h.style.animationDelay=(Math.random()*.8)+'s';
+      document.body.appendChild(h);
+      setTimeout(()=>h.remove(),8000);
+    }
+  }
+
+  function showWhisper(text){
+    const el=document.createElement('div');
+    el.className='whisper-msg';
+    el.textContent=text;
+    $('#whisper-stage').appendChild(el);
+    setTimeout(()=>el.remove(),4100);
+    burstHearts(6);
+  }
+
+  /* ---- wake lock ---- */
+  async function acquireWake(){
+    try{
+      if(!('wakeLock' in navigator)) { setWakeUI(false,'not supported'); return; }
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release', ()=> setWakeUI(false));
+      setWakeUI(true);
+    }catch(e){ setWakeUI(false); }
+  }
+  function setWakeUI(on, note){
+    const c=$('#wake-chip');
+    c.classList.toggle('on',on);
+    $('#wake-ico').textContent = on ? '🌕' : '🔅';
+    $('#wake-txt').textContent = on ? 'screen: awake' : ('screen: '+(note||'normal'));
+  }
+  document.addEventListener('visibilitychange', ()=>{
+    if(document.visibilityState==='visible' && api) acquireWake();
+  });
+  $('#wake-chip').addEventListener('click', ()=>{
+    if(wakeLock && !wakeLock.released){ wakeLock.release(); wakeLock=null; }
+    else acquireWake();
+  });
+
+  /* ---- timers ---- */
+  function fmtElapsed(){
+    if(!startedAt) return '0:00';
+    const s=Math.floor((Date.now()-startedAt)/1000);
+    const h=Math.floor(s/3600), m=Math.floor(s%3600/60);
+    return h>0 ? `${h}h ${m}m` : `${m}:${String(s%60).padStart(2,'0')}`;
+  }
+  function fmtTogether(){
+    if(!startedAt) return 'together just now 💗';
+    const m=Math.floor((Date.now()-startedAt)/60000);
+    if(m<60) return `together for ${m} min 💗`;
+    return `together for ${Math.floor(m/60)}h ${m%60}m 💗`;
+  }
+
+  /* ---- join ---- */
+  $('#join').addEventListener('click', ()=>{
+    const me=$('#name-me').value.trim(), them=$('#name-them').value.trim(), secret=$('#secret').value.trim();
+    if(!me||!them||!secret){ toast('fill in both names and your secret word 🤫'); return; }
+    store.set('me',me); store.set('them',them); store.set('secret',secret);
+
+    const pair=[slug(me),slug(them)].sort().join('-and-');
+    const room=`NightNest-${pair}-${slug(secret)}`;
+
+    $('#landing').classList.add('hidden');
+    $('#call').classList.remove('hidden');
+    $('#chip-names').textContent = `${me} & ${them}`;
+
+    api = new JitsiMeetExternalAPI('meet.jit.si', {
+      roomName: room,
+      parentNode: $('#jitsi-box'),
+      userInfo:{ displayName: me },
+      configOverwrite:{
+        prejoinConfig:{enabled:true},
+        disableDeepLinking:true,
+        defaultLanguage:'en',
+        subject:`🌙 ${me} & ${them}'s night nest`,
+        toolbarButtons:['microphone','camera','tileview','settings','hangup','select-background'],
+        notifications:[]
+      },
+      interfaceConfigOverwrite:{
+        MOBILE_APP_PROMO:false,
+        SHOW_JITSI_WATERMARK:false,
+        DEFAULT_BACKGROUND:'#0b0e1d'
+      }
+    });
+
+    api.addListener('videoConferenceJoined', ()=>{
+      startedAt=Date.now();
+      timerInt=setInterval(()=>{ $('#chip-timer').textContent=fmtElapsed(); },1000);
+      acquireWake();
+      burstHearts(14);
+      toast(`welcome to your nest, ${me} 🌙 sleep mode 😴 dims the screen`);
+    });
+
+    api.addListener('participantJoined', e=>{
+      burstHearts(16);
+      showWhisper(`${e.displayName||'your love'} is here 🥰`);
+    });
+
+    api.addListener('endpointTextMessageReceived', e=>{
+      try{
+        const d=JSON.parse(e.data.eventData.text);
+        if(d.t==='hearts') burstHearts(14);
+        if(d.t==='whisper') showWhisper(d.m);
+      }catch(_){}
+    });
+
+    api.addListener('readyToClose', ()=> location.reload());
+  });
+
+  function sendToLove(payload){
+    if(!api) return;
+    const ids=api.getParticipantsInfo().filter(p=>!p.isLocal).map(p=>p.participantId);
+    ids.forEach(id=> api.executeCommand('sendEndpointTextMessage', id, JSON.stringify(payload)));
+    return ids.length>0;
+  }
+
+  /* ---- moonbar ---- */
+  $('#btn-heart').addEventListener('click', ()=>{
+    burstHearts(12);
+    if(!sendToLove({t:'hearts'})) toast('hearts ready — they’ll fly over when your love joins 💗');
+  });
+  $('#btn-whisper').addEventListener('click', ()=> $('#whispers').classList.toggle('open'));
+  document.querySelectorAll('.whispers button').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      $('#whispers').classList.remove('open');
+      showWhisper(b.dataset.w);
+      sendToLove({t:'whisper', m:b.dataset.w});
+    });
+  });
+
+  /* ---- sleep mode ---- */
+  const sleep=$('#sleep');
+  $('#btn-sleep').addEventListener('click', ()=>{
+    sleep.classList.add('on');
+    const tick=()=>{
+      const d=new Date();
+      $('#sleep-clock').textContent = d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
+      $('#sleep-together').textContent = fmtTogether();
+    };
+    tick(); clockInt=setInterval(tick,10000);
+  });
+  let lastTap=0;
+  sleep.addEventListener('click', ()=>{
+    const now=Date.now();
+    if(now-lastTap<400){ sleep.classList.remove('on'); clearInterval(clockInt); }
+    lastTap=now;
+  });
+
+  /* enter key joins */
+  document.querySelectorAll('#landing input').forEach(i=>
+    i.addEventListener('keydown', e=>{ if(e.key==='Enter') $('#join').click(); }));
+})();
+</script>
+</body>
+</html>
